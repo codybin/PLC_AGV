@@ -13,9 +13,15 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.xintai.informatiomn.SinceTechInformation;
 import com.xintai.interaction.erp.FinshInforFromERP;
+import com.xintai.interaction.erp.ReponseResult;
+import com.xintai.interaction.erp.WMSTaskTable;
+import com.xintai.interaction.erp.WMSTaskTables;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import static java.util.Objects.requireNonNull;
 import javax.inject.Inject;
+import jdk.internal.org.jline.utils.ExecHelper;
 import org.opentcs.access.to.order.OrderSequenceCreationTO;
 import org.opentcs.data.ObjectExistsException;
 import org.opentcs.data.ObjectUnknownException;
@@ -120,8 +126,12 @@ public class V1RequestHandler
                  this::handlePostTransportOrder);
     service.post("/finshNotice/",
                  this::handlePostFinshInformationFromERP);
+     service.post("/tasktables",
+                 this::handleCreateTaskTable);
     service.get("/transportOrders/:NAME",
                 this::handleGetTransportOrderByName);
+     service.get("/tasktables",
+                this::handleGetTaskTable);
     service.get("/transportOrders",
                 this::handleGetTransportOrders);
   }
@@ -234,6 +244,7 @@ statusInformationProvider.handerfinshinformationfromerp(fromJson(request.body(),
       return objectMapper.readValue(jsonString, clazz);
     }
     catch (IOException exc) {
+      System.out.println(exc.getMessage());
       throw new IllegalArgumentException("Could not parse JSON input", exc);
     }
   }
@@ -290,5 +301,28 @@ statusInformationProvider.handerfinshinformationfromerp(fromJson(request.body(),
 
   private boolean disableVehicle(Request request) {
     return Boolean.parseBoolean(request.queryParamOrDefault("disableVehicle", "false"));
+  }
+  
+  private Object handleGetTaskTable(Request request, Response response) {
+    response.type(HttpConstants.CONTENT_TYPE_APPLICATION_JSON_UTF8);
+    List<WMSTaskTable> list=new LinkedList<>();
+   // list.add(new WMSTaskTable("2021022270004","PTRU","001","002","FINSHI"));
+    //list.add(new WMSTaskTable("2021022270005","YLRU","003","004","UNFINSHI"));
+    //list.add(new WMSTaskTable("2021022270006","YLRU","006","007","UNFINSHI"));
+    WMSTaskTables wMSTaskTable=new WMSTaskTables();
+    wMSTaskTable.setwMSTaskTables(list);
+    return toJson(wMSTaskTable);
+  }
+   private Object handleCreateTaskTable(Request request, Response response)
+      throws ObjectUnknownException {
+    WMSTaskTables  wMSTaskTables=fromJson(request.body(), WMSTaskTables.class);
+    wMSTaskTables.getwMSTaskTables().
+       forEach(
+           (e)->{
+             System.out.println(e.toString());
+           });
+    response.type(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
+   ReponseResult  reponseResult= new ReponseResult();
+    return  toJson(reponseResult.SUCCESS("Success",wMSTaskTables));
   }
 }

@@ -120,7 +120,8 @@ public class PLCComAdapter  extends BasicVehicleCommAdapter implements EventHand
            IVehicleMessageService.HeartBeat();
            processindex=0;
            break;           
-            }   
+            } 
+            
     if(!getProcessModel().isCommAdapterConnected())
     {  
         IVehicleMessageService.DisConnect();

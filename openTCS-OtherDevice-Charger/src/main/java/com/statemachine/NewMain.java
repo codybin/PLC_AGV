@@ -33,7 +33,7 @@ public class NewMain {
                 "' with context '"+context+"'.");
         }
 
-        protected void ontoB(String from, String to, FSMEvent event, Integer context) {
+        protected void ontoB(String from, String to, FSMEvent event,Integer context) {
             System.out.println("Entry State \'"+to+"\'.");
         }
     }

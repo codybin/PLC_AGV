@@ -313,7 +313,7 @@ private  void JudgeConnect()
      getProcessModel().setIsConnected(isconnected);
 }
 }
-private int processindex=0;
+private volatile boolean isLifting=false;
   @Override
    public void initialize() {
          if (isInitialized()) {
@@ -322,7 +322,10 @@ private int processindex=0;
     super.initialize();
    this.requestResponseMatcher = componentsFactory.createRequestResponseMatcher(this);
     this.stateRequesterTask = componentsFactory.createStateRequesterTask(e -> {
-         requestResponseMatcher.enqueueRequest(new KeCongComandSerachRobotStatue());
+         if(!isLifting)
+         {
+           requestResponseMatcher.enqueueRequest(new KeCongComandSerachRobotStatue());
+         }
          requestResponseMatcher.checkForSendingNextRequest();
      JudgeConnect();
     });
@@ -617,7 +620,7 @@ private int processindex=0;
     if(operation.equals(getProcessModel().getLoadOperation()))
      {
       String liftlevel =movementCommand.getOpLocation().getProperty("liftlevel");
-    float lift=Float.valueOf(liftlevel);
+       float lift=Float.valueOf(liftlevel);
        ACTION_SET.add(operation);
        liftorlowerfork(lift);
       }else if(operation.equals(getProcessModel().getUnloadOperation()))
@@ -656,19 +659,20 @@ private int processindex=0;
         ACTION_SET.remove(action);
         }
         GetOrderIds().remove(cmd);
-       getProcessModel().commandExecuted(cmd);  
+       getProcessModel().commandExecuted(cmd); 
+       isLifting=false;
      }
      private  void liftorlowerfork(float f){
+     isLifting=true;
      byte[]varvalue=DataConvertUtl.getBytes(f);
+     KeCongComandWrite keCongComandWrite3=  new KeCongComandWrite( KeCongActionVar.FINSHI_TASK, new byte[]{ Byte.parseByte("1")});
      KeCongComandWrite keCongComandWrite1=  new KeCongComandWrite( KeCongActionVar.LIFT_SV, varvalue);
      KeCongComandWrite keCongComandWrite=  new KeCongComandWrite( KeCongActionVar.PID_ENABLE_STRING, new byte[]{ Byte.parseByte("1")});
      KeCongComandWrite keCongComandWrite2=  new KeCongComandWrite( KeCongActionVar.FINSHI_TASK, new byte[]{ Byte.parseByte("0")});
+     getRequestResponseMatcher().enqueueRequest(keCongComandWrite3);
      getRequestResponseMatcher().enqueueRequest(keCongComandWrite);
      getRequestResponseMatcher().enqueueRequest(keCongComandWrite1);
      getRequestResponseMatcher().enqueueRequest(keCongComandWrite2);
-     /* sendTelegram(keCongComandWrite);
-     sendTelegram(keCongComandWrite1);
-     sendTelegram(keCongComandWrite2);*/
     KeCongComandRead kccr=new KeCongComandRead(KeCongActionVar.FINSHI_TASK);
     getRequestResponseMatcher().enqueueRequest(kccr);
     
@@ -820,7 +824,13 @@ while(getProcessModel().isIscharging())
     EMPTY,
     FULL;
   }
-
+  @Override
+  public synchronized void clearCommandQueue() {
+    super.clearCommandQueue();
+    orderIds.clear();
+    getComandMovementRequestQueue().clear();
+    ACTION_SET.clear();
+  }
     private  final Queue<MovementCommand> comandmovement = new LinkedBlockingQueue<>();
     public Queue<MovementCommand> getComandMovementRequestQueue()
     {

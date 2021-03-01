@@ -5,6 +5,8 @@
  */
 package com.xintai.device;
 
+import java.util.List;
+
 /**
  *
  * @author Lenovo
@@ -16,11 +18,14 @@ public class NewMain {
    */
   public static void main(String[] args) {
     // TODO code application logic here
+     DestinationLocationService destinationLocationService=new DestinationLocationService();
+ DestinationsLocations destinationsM=   destinationLocationService.findDestinationsMByOrderType("PTRU");
+  destinationsM.getDestinations().getDestinations().forEach((e)->{System.out.println(e.toString());});
+    /*
     jingBianMysqlService jinBianMysqlService=new jingBianMysqlService();
-    jingBian_Device jingBian_Device1=   jinBianMysqlService.findDeviceByID(2);
+    jingBian_Device jingBian_Device1=   jinBianMysqlService.findDeviceByID(1);
     System.out.println(jingBian_Device1.toString());
     jinBianMysqlService.clearDeviceID(1);
-    jinBianMysqlService.setDeviceID(1, 2);
+    jinBianMysqlService.setDeviceID(1, 2);*/
   }
-  
 }
