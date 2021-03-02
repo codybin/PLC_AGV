@@ -5,6 +5,8 @@
  */
 package com.xintai.device;
 
+import java.util.List;
+
 /**
  *
  * @author Lenovo
@@ -13,9 +15,19 @@ public class DestinationsLocations {
 
   @Override
   public String toString() {
-    return "DestinationsM{" + "OrderType=" + OrderType + ", ID=" + ID + ", destinations=" + destinations + '}';
+    return "DestinationsLocations{" + "WMSStaion=" + WMSStaion + ", OrderType=" + OrderType + ", ID=" + ID + ", destinations=" + destinations + '}';
   }
-  
+
+ 
+  private String WMSStaion;
+
+  public String getWMSStaion() {
+    return WMSStaion;
+  }
+
+  public void setWMSStaion(String WMSStaion) {
+    this.WMSStaion = WMSStaion;
+  }
   private String OrderType;
   private int ID;
   private Destinations destinations;
@@ -40,5 +52,10 @@ public class DestinationsLocations {
 
   public void setOrderType(String OrderType) {
     this.OrderType = OrderType;
+  }
+  public List<Destination> MergerDestionation(Destinations dstn)
+  {
+    destinations.getDestinations().addAll(dstn.getDestinations());
+  return destinations.getDestinations();
   }
 }

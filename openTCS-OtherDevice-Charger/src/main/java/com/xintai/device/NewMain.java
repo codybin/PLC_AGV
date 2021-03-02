@@ -19,8 +19,14 @@ public class NewMain {
   public static void main(String[] args) {
     // TODO code application logic here
      DestinationLocationService destinationLocationService=new DestinationLocationService();
- DestinationsLocations destinationsM=   destinationLocationService.findDestinationsMByOrderType("PTRU");
-  destinationsM.getDestinations().getDestinations().forEach((e)->{System.out.println(e.toString());});
+      DestinationsLocations destinationsM1=   destinationLocationService.findDestinationsMByOrderType("001");
+    DestinationsLocations destinationsM=   destinationLocationService.findDestinationsMByOrderType("007");
+    if(destinationsM==null||destinationsM1==null)
+    {
+    return;
+    }
+     destinationsM1.MergerDestionation(destinationsM.getDestinations());
+    destinationsM1.getDestinations().getDestinations().forEach((e)->{System.out.println(e.toString());});
     /*
     jingBianMysqlService jinBianMysqlService=new jingBianMysqlService();
     jingBian_Device jingBian_Device1=   jinBianMysqlService.findDeviceByID(1);

@@ -21,14 +21,15 @@ public class DestinationLocationService {
        this.mysqlFactory =new MysqlFactory();
        mSessionFactory = mysqlFactory.getSqlSessionFactory();
   }
- public DestinationsLocations  findDestinationsMByOrderType(String  ordertype)
+ public DestinationsLocations  findDestinationsMByOrderType(String wmsstaion)
   {
    SqlSession sqlSession = null;
    DestinationsLocations  destinationsM=null;
+   //WMSTableInfor wmsti=new WMSTableInfor(ordertype, wmsstaion);
    try {
     // 打开 SqlSession 会话
     sqlSession =mSessionFactory .openSession();
-    destinationsM = sqlSession.selectOne("com.mybatis.mapper.LikuLocationMapper.getLikuLocation", ordertype);//To change body of generated methods, choose Tools | Templates.
+    destinationsM = sqlSession.selectOne("com.mybatis.mapper.LikuLocationMapper.getLikuLocation", wmsstaion);//To change body of generated methods, choose Tools | Templates.
     sqlSession.commit();   
   } catch (Exception e) {
   System.out.println(e.getMessage());

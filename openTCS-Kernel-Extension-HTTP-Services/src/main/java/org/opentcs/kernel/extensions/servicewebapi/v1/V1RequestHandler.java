@@ -11,6 +11,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.xintai.device.DestinationLocationService;
+import com.xintai.device.Destinations;
+import com.xintai.device.DestinationsLocations;
 import com.xintai.informatiomn.SinceTechInformation;
 import com.xintai.interaction.erp.FinshInforFromERP;
 import com.xintai.interaction.erp.ReponseResult;
@@ -22,6 +25,7 @@ import java.util.List;
 import static java.util.Objects.requireNonNull;
 import javax.inject.Inject;
 import jdk.internal.org.jline.utils.ExecHelper;
+import org.opentcs.access.KernelRuntimeException;
 import org.opentcs.access.to.order.OrderSequenceCreationTO;
 import org.opentcs.data.ObjectExistsException;
 import org.opentcs.data.ObjectUnknownException;
@@ -29,6 +33,7 @@ import org.opentcs.data.order.OrderSequence;
 import org.opentcs.kernel.extensions.servicewebapi.HttpConstants;
 import org.opentcs.kernel.extensions.servicewebapi.RequestHandler;
 import org.opentcs.kernel.extensions.servicewebapi.v1.order.OrderHandler;
+import org.opentcs.kernel.extensions.servicewebapi.v1.order.binding.Destination;
 import org.opentcs.kernel.extensions.servicewebapi.v1.order.binding.Transport;
 import org.opentcs.kernel.extensions.servicewebapi.v1.status.RequestStatusHandler;
 import org.opentcs.kernel.extensions.servicewebapi.v1.status.StatusEventDispatcher;
@@ -66,14 +71,17 @@ public class V1RequestHandler
    * Whether this instance is initialized.
    */
   private boolean initialized;
+  private final DestinationLocationService destinationLocationService;
 
   @Inject
   public V1RequestHandler(StatusEventDispatcher statusEventDispatcher,
                           OrderHandler orderHandler,
-                          RequestStatusHandler requestHandler) {
+                          RequestStatusHandler requestHandler,
+                          DestinationLocationService destinationLocationService) {
     this.statusEventDispatcher = requireNonNull(statusEventDispatcher, "statusEventDispatcher");
     this.orderHandler = requireNonNull(orderHandler, "orderHandler");
     this.statusInformationProvider = requireNonNull(requestHandler, "requestHandler");
+    this.destinationLocationService=requireNonNull(destinationLocationService, "destinationLocationService");
   }
 
   @Override
@@ -316,7 +324,12 @@ statusInformationProvider.handerfinshinformationfromerp(fromJson(request.body(),
    private Object handleCreateTaskTable(Request request, Response response)
       throws ObjectUnknownException {
     WMSTaskTables  wMSTaskTables=fromJson(request.body(), WMSTaskTables.class);
-    wMSTaskTables.getwMSTaskTables().
+    int cout= wMSTaskTables.getwMSTaskTables().size();
+     for(int i=0;i<cout;i++)
+    {
+      create_order(wMSTaskTables, i);
+    }
+       wMSTaskTables.getwMSTaskTables().
        forEach(
            (e)->{
              System.out.println(e.toString());
@@ -324,5 +337,43 @@ statusInformationProvider.handerfinshinformationfromerp(fromJson(request.body(),
     response.type(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
    ReponseResult  reponseResult= new ReponseResult();
     return  toJson(reponseResult.SUCCESS("Success",wMSTaskTables));
+  }
+
+  private void create_order(WMSTaskTables wMSTaskTables, int i)
+      throws KernelRuntimeException, IllegalStateException {
+      WMSTaskTable wmstt= wMSTaskTables.getwMSTaskTables().get(i);
+      Transport transport=new Transport();
+      String name=wmstt.getTasknumber();
+      String startstation=  wmstt.getStartstation();
+      String endStationString=wmstt.getEndstaion();
+      DestinationsLocations  destinationsM1=  destinationLocationService.findDestinationsMByOrderType(startstation);
+      DestinationsLocations  destinationsM2=  destinationLocationService.findDestinationsMByOrderType(endStationString);
+      DestinationsLocations  ddDestinationsLocations="SBBH".equals(destinationsM1.getOrderType())?destinationsM1:"SBBH".equals(destinationsM2.getOrderType())?destinationsM2:null;
+      if(ddDestinationsLocations!=null)
+      {List<com.xintai.device.Destination> list= ddDestinationsLocations.getDestinations().getDestinations();
+      com.xintai.device.Destination JDestination=  list.get(i);
+      List<com.xintai.device.Destination> list1=new LinkedList<>();
+      list1.add(JDestination);
+      Destinations destinations=new Destinations();
+      destinations.setDestinations(list1);
+      if("SBBH".equals(destinationsM1.getOrderType()))
+      {
+          destinationsM1.setDestinations(destinations);
+      }else
+      {
+          destinationsM2.setDestinations(destinations);
+      }
+      }
+      destinationsM1.MergerDestionation(destinationsM2.getDestinations());
+      List<Destination> destinationst=new LinkedList<>();
+      destinationsM1.getDestinations().getDestinations().forEach((e)->
+      {
+          Destination dstDestination=new Destination();
+          dstDestination.setLocationName(e.getLocationName());
+          dstDestination.setOperation(e.getOperation());
+          destinationst.add(dstDestination);
+      });
+      transport.setDestinations(destinationst);
+      orderHandler.createOrder(name,transport);
   }
 }

@@ -1,5 +1,6 @@
 
 package org.opentcs.otherdevice;
+import com.xintai.device.DestinationLocationService;
 import com.xintai.shunli.OtherDeviceConfiguration;
 import com.xintai.shunli.device_shunlicontroller;
 import javax.inject.Singleton;
@@ -21,7 +22,8 @@ public class OtherDeviceInjection
     return;
     }
     bind(OtherDeviceConfiguration.class).toInstance(configuration);
-    bind(device_shunlicontroller.class).in(Singleton.class);   
+    bind(device_shunlicontroller.class).in(Singleton.class);  
+    bind(DestinationLocationService.class).in(Singleton.class);  
   }
 }
 

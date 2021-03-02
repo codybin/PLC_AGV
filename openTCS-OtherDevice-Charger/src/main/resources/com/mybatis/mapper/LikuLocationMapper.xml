@@ -6,9 +6,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap id="pklocation" type="com.xintai.device.DestinationsLocations">
         <id column="idlikulocation" jdbcType="NUMERIC" property="ID"/>
         <result column="ordertype" jdbcType="VARCHAR" property="OrderType"/>
+        <result column="wmsstaion" jdbcType="VARCHAR" property="WMSStaion"/>
         <result column="actionseq" jdbcType="VARCHAR" property="destinations" typeHandler="com.xintai.device.JsonTypeHandler"/>
     </resultMap>
     <select id="getLikuLocation" parameterType="String" resultMap="pklocation">
-      select * from likulocation where ordertype=#{action}       
+      select * from likulocation where wmsstaion=#{wmsstaion}      
     </select>
 </mapper>
