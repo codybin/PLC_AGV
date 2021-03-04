@@ -5,6 +5,7 @@
  */
 package com.xintai.device;
 
+import com.xintai.WMSTaskTable;
 import java.util.List;
 
 /**
@@ -19,8 +20,20 @@ public class NewMain {
   public static void main(String[] args) {
     // TODO code application logic here
      DestinationLocationService destinationLocationService=new DestinationLocationService();
-      DestinationsLocations destinationsM1=   destinationLocationService.findDestinationsMByOrderType("001");
-    DestinationsLocations destinationsM=   destinationLocationService.findDestinationsMByOrderType("007");
+    System.out.println(destinationLocationService.findWMSTaskTableByTaskNumber("20210304001").toString());
+    WMSTaskTable wMSTaskTable=new WMSTaskTable();
+    wMSTaskTable.setTasknumber("20210304002");
+    wMSTaskTable.setAGVstate("Unfinsh");
+    wMSTaskTable.setStartstation("003");
+    wMSTaskTable.setEndstation("004");
+    wMSTaskTable.setTasktype("PTRK");
+     destinationLocationService.InsertWMSTaskTable(wMSTaskTable);
+      wMSTaskTable.setTasknumber("20210304002");
+      wMSTaskTable.setAGVstate("3232");
+      destinationLocationService.UpdateWMSTaskTable(wMSTaskTable);
+      destinationLocationService.Delete("20210304002");
+      DestinationsLocations destinationsM1=   destinationLocationService.findDestinationsByOrderType("001");
+    DestinationsLocations destinationsM=   destinationLocationService.findDestinationsByOrderType("007");
     if(destinationsM==null||destinationsM1==null)
     {
     return;
