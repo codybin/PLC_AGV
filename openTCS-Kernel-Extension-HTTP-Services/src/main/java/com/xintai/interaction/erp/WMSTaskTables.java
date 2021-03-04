@@ -7,6 +7,7 @@ package com.xintai.interaction.erp;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.xintai.WMSTaskTable;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.xintai.interaction.erp;
+package com.xintai;
 
 /**
  *
@@ -21,12 +21,20 @@ public class WMSTaskTable {
   private String tasknumber;
   private String tasktype;
   private String startstation;
-  private String endstaion;
+  private String endstation;
+
+  public String getEndstation() {
+    return endstation;
+  }
+
+  public void setEndstation(String endstation) {
+    this.endstation = endstation;
+  }
   private String AGVstate;
 
   @Override
   public String toString() {
-    return "WMSTaskTable{" + "tasknumber=" + tasknumber + ", tasktype=" + tasktype + ", startstation=" + startstation + ", endstaion=" + endstaion + ", AGVstate=" + AGVstate + '}';
+    return "WMSTaskTable{" + "tasknumber=" + tasknumber + ", tasktype=" + tasktype + ", startstation=" + startstation + ", endstaion=" + endstation + ", AGVstate=" + AGVstate + '}';
   }
 
   public String getAGVstate() {
@@ -59,12 +67,4 @@ public class WMSTaskTable {
   public void setStartstation(String startstation) {
     this.startstation = startstation;
   }
-
-  public String getEndstaion() {
-    return endstaion;
-  }
-
-  public void setEndstaion(String endstaion) {
-    this.endstaion = endstaion;
-  } 
 }

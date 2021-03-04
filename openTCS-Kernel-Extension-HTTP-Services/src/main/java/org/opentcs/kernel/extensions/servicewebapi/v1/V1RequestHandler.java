@@ -17,7 +17,7 @@ import com.xintai.device.DestinationsLocations;
 import com.xintai.informatiomn.SinceTechInformation;
 import com.xintai.interaction.erp.FinshInforFromERP;
 import com.xintai.interaction.erp.ReponseResult;
-import com.xintai.interaction.erp.WMSTaskTable;
+import com.xintai.WMSTaskTable;
 import com.xintai.interaction.erp.WMSTaskTables;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -342,12 +342,18 @@ statusInformationProvider.handerfinshinformationfromerp(fromJson(request.body(),
   private void create_order(WMSTaskTables wMSTaskTables, int i)
       throws KernelRuntimeException, IllegalStateException {
       WMSTaskTable wmstt= wMSTaskTables.getwMSTaskTables().get(i);
+      //添加任务单到数据库中
+      destinationLocationService.InsertWMSTaskTable(wmstt);
       Transport transport=new Transport();
       String name=wmstt.getTasknumber();
       String startstation=  wmstt.getStartstation();
-      String endStationString=wmstt.getEndstaion();
-      DestinationsLocations  destinationsM1=  destinationLocationService.findDestinationsMByOrderType(startstation);
-      DestinationsLocations  destinationsM2=  destinationLocationService.findDestinationsMByOrderType(endStationString);
+      String endStationString=wmstt.getEndstation();
+      DestinationsLocations  destinationsM1=  destinationLocationService.findDestinationsByOrderType(startstation);
+      DestinationsLocations  destinationsM2=  destinationLocationService.findDestinationsByOrderType(endStationString);
+      if(destinationsM1==null||destinationsM2==null)
+      {//或者throw 异常
+        return;
+      }
       DestinationsLocations  ddDestinationsLocations="SBBH".equals(destinationsM1.getOrderType())?destinationsM1:"SBBH".equals(destinationsM2.getOrderType())?destinationsM2:null;
       if(ddDestinationsLocations!=null)
       {List<com.xintai.device.Destination> list= ddDestinationsLocations.getDestinations().getDestinations();
