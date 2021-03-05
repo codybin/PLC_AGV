@@ -356,7 +356,6 @@ statusInformationProvider.handerfinshinformationfromerp(fromJson(request.body(),
       throws KernelRuntimeException, IllegalStateException {
       WMSTaskTable wmstt= wMSTaskTables.getwMSTaskTables().get(i);
       //添加任务单到数据库中
-      destinationLocationService.InsertWMSTaskTable(wmstt);
       Transport transport=new Transport();
       String name=wmstt.getTasknumber();
       String startstation=  wmstt.getStartstation();
@@ -365,24 +364,9 @@ statusInformationProvider.handerfinshinformationfromerp(fromJson(request.body(),
       DestinationsLocations  destinationsM2=  destinationLocationService.findDestinationsByOrderType(endStationString);
       if(destinationsM1==null||destinationsM2==null)
       {//或者throw 异常
-        return;
+          throw new ObjectUnknownException("Unknown wmsstation: " + name);
       }
-      DestinationsLocations  ddDestinationsLocations="SBBH".equals(destinationsM1.getOrderType())?destinationsM1:"SBBH".equals(destinationsM2.getOrderType())?destinationsM2:null;
-      if(ddDestinationsLocations!=null)
-      {List<com.xintai.device.Destination> list= ddDestinationsLocations.getDestinations().getDestinations();
-      com.xintai.device.Destination JDestination=  list.get(i);
-      List<com.xintai.device.Destination> list1=new LinkedList<>();
-      list1.add(JDestination);
-      Destinations destinations=new Destinations();
-      destinations.setDestinations(list1);
-      if("SBBH".equals(destinationsM1.getOrderType()))
-      {
-          destinationsM1.setDestinations(destinations);
-      }else
-      {
-          destinationsM2.setDestinations(destinations);
-      }
-      }
+      destinationLocationService.InsertWMSTaskTable(wmstt);
       destinationsM1.MergerDestionation(destinationsM2.getDestinations());
       List<Destination> destinationst=new LinkedList<>();
       destinationsM1.getDestinations().getDestinations().forEach((e)->
