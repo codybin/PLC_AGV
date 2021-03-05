@@ -7,6 +7,8 @@ package com.statemachine;
 
 import com.google.inject.Inject;
 import com.xintai.device.DestinationLocationService;
+import static java.util.Objects.requireNonNull;
+import java.util.concurrent.ExecutorService;
 import org.squirrelframework.foundation.fsm.StateMachineBuilderFactory;
 import org.squirrelframework.foundation.fsm.StateMachineStatus;
 import org.squirrelframework.foundation.fsm.UntypedStateMachine;
@@ -21,9 +23,10 @@ import org.squirrelframework.foundation.fsm.impl.AbstractUntypedStateMachine;
 public class FSMStateMachine {
 
   private final DestinationLocationService destinationLocationService;
+  private final ExecutorService plcService;
 @Inject
-  public FSMStateMachine(DestinationLocationService destinationLocationService) {
-    
+  public FSMStateMachine(DestinationLocationService destinationLocationService,@PLCExecutor ExecutorService  plcService) {
+      this.plcService = requireNonNull(plcService, "kernelExecutor");
     this.destinationLocationService=destinationLocationService;
      UntypedStateMachineBuilder builder = StateMachineBuilderFactory.create(StateMachinePTRK.class);
         //原料盘头入库

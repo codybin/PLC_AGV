@@ -4,6 +4,7 @@ import com.statemachine.PLCExecutor;
 import com.xintai.device.DestinationLocationService;
 import com.xintai.shunli.OtherDeviceConfiguration;
 import com.xintai.shunli.device_shunlicontroller;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Singleton;
 import org.opentcs.common.LoggingScheduledThreadPoolExecutor;
@@ -35,7 +36,7 @@ public class OtherDeviceInjection
               return thread;
             }
         );
-         bind(ScheduledExecutorService.class)
+         bind(ExecutorService.class)
         .annotatedWith(PLCExecutor.class)
         .toInstance(executor1);
     bind(OtherDeviceConfiguration.class).toInstance(configuration);

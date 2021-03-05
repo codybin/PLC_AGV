@@ -175,7 +175,7 @@ public class RequestStatusHandler {
       throws ObjectUnknownException, IllegalArgumentException {
     requireNonNull(name, "name");
     requireNonNull(value, "value");
-
+    
     Vehicle vehicle = orderService.fetchObject(Vehicle.class, name);
     if (vehicle == null) {
       throw new ObjectUnknownException("Unknown vehicle: " + name);

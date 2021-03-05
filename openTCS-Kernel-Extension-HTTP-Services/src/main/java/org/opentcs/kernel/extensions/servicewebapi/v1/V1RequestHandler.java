@@ -120,6 +120,8 @@ public class V1RequestHandler
                 this::handleGetEvents);
      service.put("/vehicles/:NAME/finshmark",
                 this::handlePutFinshWork);
+      service.post("/tasktables/complete",
+                this::handleInformationFromerp);
     service.put("/vehicles/:NAME/integrationLevel",
                 this::handlePutVehicleIntegrationLevel);
     service.post("/vehicles/:NAME/withdrawal",
@@ -134,10 +136,12 @@ public class V1RequestHandler
                  this::handlePostTransportOrder);
     service.post("/finshNotice/",
                  this::handlePostFinshInformationFromERP);
+    //创建表单
      service.post("/tasktables",
                  this::handleCreateTaskTable);
     service.get("/transportOrders/:NAME",
                 this::handleGetTransportOrderByName);
+    //获得表单
      service.get("/tasktables",
                 this::handleGetTaskTable);
     service.get("/transportOrders",
@@ -218,6 +222,15 @@ statusInformationProvider.handerfinshinformationfromerp(fromJson(request.body(),
     response.type(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     return toJson(statusInformationProvider.getVehicleStateByName(request.params(":NAME")));
   }
+  
+    private Object handleInformationFromerp(Request request, Response response)
+      throws ObjectUnknownException, IllegalArgumentException {
+  orderHandler.handerfinshinformation(fromJson(request.body(), WMSTaskTable.class));
+    response.type(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
+    return "";
+  }
+      
+      
  private Object handlePutFinshWork(Request request, Response response)
       throws ObjectUnknownException, IllegalArgumentException {
     statusInformationProvider.putMESFinshWork(
